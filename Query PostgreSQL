@@ -695,10 +695,47 @@ Select "pais","precio",
 from "Precios"
 
 -----------------------------------------------------------
--- CURSOR
+-- CURSORES
+do $$
+declare 
+       registro Record;
+       Cur_precios Cursor for select * from "Precios" order by "pais";
+begin
+
+Open Cur_precios;
+Fetch Cur_precios into registro;
+Raise Notice 'Pais: % , Precio: %', registro.pais ,registro.precio;
+Fetch Cur_precios into registro;
+Raise Notice 'Pais: % , Precio: %', registro.pais ,registro.precio;
+end $$
+Language 'plpgsql';
+
+---- Recorrer con el While
+
+CREATE OR REPLACE FUNCTION cursor_while() RETURNS VOID AS
+$$
+DECLARE
+    reg          RECORD;
+    cur_Precios CURSOR FOR SELECT * FROM "Precios"
+                 ORDER BY "pais";
+BEGIN
+   OPEN cur_Precios;
+   FETCH cur_Precios INTO reg;
+   WHILE( FOUND ) LOOP
+       RAISE NOTICE ' Pais: % , Precio: %', reg.pais, reg.precio;
+       FETCH cur_Precios INTO reg;
+   END LOOP ;
+   RETURN;
+END
+$$
+LANGUAGE 'plpgsql';
+
+Select cursor_while()
+
+-- recorrer con el FOR
 
 CREATE OR REPLACE FUNCTION cursor_Precios() RETURNS VOID AS
-$Cuerpo$
+$$
 DECLARE
     reg          RECORD;
     cur_Precios CURSOR FOR SELECT * FROM "Precios"
@@ -709,12 +746,10 @@ BEGIN
    END LOOP;
    RETURN;
 END
-$Cuerpo$
+$$
 LANGUAGE 'plpgsql';
 
 Select cursor_Precios()
-
-
 
 
 
